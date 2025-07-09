@@ -11,17 +11,15 @@ const sendEmailVerification = async (email, verificationToken) => {
         }
     });
 
-    // 🔥 Dynamically construct the verification link using token
     const verificationLink = `https://auth-app-szvj.onrender.com/user/verifyEmail/${verificationToken}`;
 
     // Email content
     const mailOptions = {
-        from: process.env.Email_User,
-        to: email,
-        subject: 'Verify your email',
-        html: `<p>Click the link to verify your email:</p>
-               <a href="${verificationLink}">${verificationLink}</a>`
-    };
+    from: process.env.Email_User,
+    to: email,
+    subject: 'Verify Your Email',
+    html: `<a href="${verificationLink}" style="padding: 10px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">Click here to verify</a>`
+};
 
     // Send the email
     await transporter.sendMail(mailOptions);
