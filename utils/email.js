@@ -12,7 +12,7 @@ const sendEmailVerification = async (email, verificationToken) => {
     });
 
     // 🔥 Dynamically construct the verification link using token
-    const verificationLink = `http://localhost:3000/user/verifyEmail/${verificationToken}`;
+    const verificationLink = `https://auth-app-szvj.onrender.com/user/verifyEmail/${verificationToken}`;
 
     // Email content
     const mailOptions = {
