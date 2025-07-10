@@ -2,6 +2,7 @@ const generateHashedToken = require('../utils/generateHashToken');
 const sendEmail = require('../utils/email');
 const User = require('../models/userModel');
 const crypto = require('crypto');
+const {generateToken, jwtAuthMiddleware} = require('../middlewares/jwt');
 
 
 exports.signUp=async(req,res)=>{
