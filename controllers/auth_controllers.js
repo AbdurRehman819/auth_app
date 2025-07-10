@@ -133,7 +133,6 @@ exports.forgotPassword=async(req,res)=>{
     }
 }
 
-
 exports.resetPassword=async(req,res)=>{
     try{
         const resetToken = req.params.token;

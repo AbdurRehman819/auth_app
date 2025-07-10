@@ -15,7 +15,7 @@ router.post('/login',authController.login);
 //forgot password route
 router.post('/forgotPassword',authController.forgotPassword);
 //reset password route
-router.put('/resetPassword/:token',authController.resetPassword);
+router.post('/resetPassword/:token',authController.resetPassword);
 
 
 //get user profile
