@@ -3,101 +3,21 @@ const User = require('../models/userModel');
 const upload= require('../middlewares/upload');
 const isAdmin=require('../middlewares/isAdmin');
 const {generateToken, jwtAuthMiddleware} = require('../middlewares/jwt');
-const crypto = require('crypto');
-const sendEmailVerification = require('../utils/email');
-
-router.post('/signup',upload.single('profilePicture'),async(req,res)=>{
-    try{
-        const {name,email,password,role}=req.body;
-
-      
-    if(await User.findOne({email}))return res.status(400).json({message: 'User already exists with this email'});
-
-    const newUser = new User({  
-      name, email, password, role,
-
-      profilePicture: req.file
-        ? {
-            data: req.file.buffer.toString('base64'),
-            contentType: req.file.mimetype,
-          }
-        : undefined,
-    });
-
-       // Generate verification token
-       const verficationToken=crypto.randomBytes(32).toString('hex');
-
-        //save the token to the user document
-       newUser.verificationToken=verficationToken;
-
-       //send verification email
-      // const verificationUrl=`http://localhost:3000/users/verifyEmail/${verficationToken}`;
-        await sendEmailVerification(newUser.email,verficationToken);  
-
-        const response=await newUser.save();
-        
-        return res.status(201).json({
-            message: 'Signup successful, Please check your email to verify your account.',
-            response
-        });
-
-    }catch(err){
-        console.error(err);
-        return res.status(500).json({message: 'Signup failed'});
-    }
-});
+const authController=require('../controllers/auth_controllers');
 
 
+//Signup route
+router.post('/signup',upload.single('profilePicture'),authController.signUp);
 //Email verification route
-
-router.get('/verifyEmail/:token',async(req,res)=>{
-    try{
-        const emailVerificationToken= req.params.token;
-        const user=await User.findOne({verificationToken: emailVerificationToken});
-
-        if(!user) return res.status(404).json({message: 'Invalid verification token'});
-        
-        user.emailVerified=true;
-        user.verificationToken=undefined; //clear the token after verification
-        
-         
-        const   response=user.save();
-        const token = generateToken(response);
-
-        res.status(200).json({
-            message: 'Email verified successfully, you can now login',
-            token: token
-        })
+router.get('/verifyEmail/:token',authController.emailVerification);
+//Login route
+router.post('/login',authController.login);
+//forgot password route
+router.post('/forgotPassword',authController.forgotPassword);
+//reset password route
+router.put('/resetPassword/:token',authController.resetPassword);
 
 
-
-    }catch(err){
-        console.log(err);
-        return res.status(500).json({message: 'Email verification failed'});
-    }
-})
-
-
-router.post('/login',async(req,res)=>{
-    try{
-        const {email,password}=req.body;
-        const user=await  User.findOne({email});
-        if(!user || !(await user.comparePassword(password)))return res.status(401).json({message: 'Invalid email or password'});
-        
-        if(!user.emailVerified) return res.status(403).json({message: 'verify email before logging in'});
-
-        const token=generateToken(user);
-        return res.status(200).json({
-            message: 'Login successful',
-            user: user,
-            token: token
-        });
-    }catch(err){
-        console.error(err);
-        return res.status(500).json({message: 'Login failed'});
-
-    }
-})
 //get user profile
  router.get('/profile',jwtAuthMiddleware,async(req,res)=>{
     try{

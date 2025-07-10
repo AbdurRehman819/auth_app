@@ -31,7 +31,11 @@ const userSchema=new mongoose.Schema({
     verificationToken: {
         type:String,
         
-    },
+    },//
+   
+    passwordResetToken: String,
+    
+    passwordResetExpires: Date,
 }
   
   );
