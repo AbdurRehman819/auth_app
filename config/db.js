@@ -1,7 +1,7 @@
 const mongoose=require('mongoose');
 
 
-const mongodbURI=process.env.LOCALHOSt_URL;
+const mongodbURI=process.env.MONGODB_URL;
 
 mongoose.connect(mongodbURI, { useUnifiedTopology: true, useNewUrlParser: true});
 
